@@ -1,0 +1,450 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ứng dụng Tính Toán Doanh Thu Shopee & TikTok</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+<style>
+    .platform-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 16px 0 rgba(0,0,0,0.10), 0 1.5px 0 0 #e5e7eb;
+        border: 2px solid #e5e7eb;
+        background: #f3f4f6;
+        position: relative;
+    }
+    .platform-btn:active {
+        top: 2px;
+        box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10);
+    }
+    .platform-btn.selected {
+        box-shadow: 0 8px 24px 0 rgba(0,0,0,0.18), 0 2px 0 0 #d97706;
+        border-color: #d97706;
+        z-index: 1;
+    }
+.day-btn {
+  padding: 0.6rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  border: 2px solid #e5e7eb;
+  background: #f3f4f6;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.05);
+}
+.day-btn.active {
+  background: #000;
+  color: white;
+  border-color: #000;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+</style>
+
+</head>
+
+<body class="bg-gray-50 min-h-screen py-8">
+    <div class="max-w-7xl mx-auto px-4">
+        <!-- Header -->
+<div class="text-center mb-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">
+        <i class="fas fa-calculator mr-3"></i>
+        Tính Toán Doanh Thu & Lợi Nhuận
+    </h1>
+
+    <div class="flex justify-center items-center space-x-2 text-gray-700 text-sm">
+        <span class="text-base font-semibold">Ngành hàng:</span>
+
+        <button class="px-3 py-1 bg-gray-200 rounded-full font-medium hover:bg-gray-300 transition">Thực phẩm và đồ uống</button>
+
+        <!-- DẤU → DẠNG NÚT -->
+        <span>→</span>
+
+        <button class="px-3 py-1 bg-gray-200 rounded-full font-medium hover:bg-gray-300 transition">Đồ uống</button>
+    </div>
+</div>
+
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Left Column - Input -->
+            <div class="bg-white rounded-lg shadow-lg p-6 border-2 border-gray-200">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">
+                    <i class="fas fa-edit mr-2"></i>Nhập Thông Tin
+                </h2>
+
+                <!-- Platform Selection -->
+<div class="mb-6">
+    <label class="block text-sm font-medium text-gray-700 mb-3">Chọn sàn bán hàng</label>
+    <div class="flex space-x-4">
+        <button id="shopee-btn" class="platform-btn bg-gray-300 text-gray-700 hover:bg-gray-400">
+            <i class="fas fa-shopping-bag"></i>
+            <span>Shopee</span>
+        </button>
+        <button id="tiktok-btn" class="platform-btn bg-gray-300 text-gray-700 hover:bg-gray-400">
+            <i class="fab fa-tiktok"></i>
+            <span>TikTok</span>
+        </button>
+    </div>
+</div>
+
+                <!-- Basic Input Fields -->
+                <div class="space-y-4 mb-6">
+                    <div class="relative">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Giá bán sản phẩm (Nghìn .đ)</label>
+                        <input type="number" id="sell-price" min="0" class="w-full pr-16 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0">
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">.000đ</span>
+                    </div>
+                    <div class="relative">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Giá nhập sản phẩm (Nghìn .đ)</label>
+                        <input type="number" id="cost-price" min="0" class="w-full pr-16 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0">
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">.000đ</span>
+                    </div>
+                    <div class="relative">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Voucher giảm giá (Nghìn .đ)</label>
+                        <input type="number" id="voucher" min="0" class="w-full pr-16 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0">
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">.000đ</span>
+                    </div>
+                </div>
+
+                <!-- TikTok Day Type Selection -->
+<div id="tiktok-day-type" class="mb-6 hidden">
+  <label class="block text-sm font-medium text-gray-700 mb-3">Phí Voucher Extra</label>
+  <div class="flex space-x-4">
+    
+<input type="radio" name="day-type" id="day-normal" value="normal" class="hidden" checked>
+<label for="day-normal" class="day-btn active day">Ngày thường (2%)</label>
+
+<input type="radio" name="day-type" id="day-sale" value="sale" class="hidden">
+<label for="day-sale" class="day-btn">Ngày sale (3%)</label>
+
+
+  </div>
+</div>
+                <!-- Customizable Fees -->
+                <div class="border-t pt-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-cog mr-2"></i>Phí vận hành (có thể tùy chỉnh)
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Lương nhân viên (%)</label>
+                            <input type="number" id="salary-fee" value="30" step="5" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Quảng cáo (%)</label>
+                            <input type="number" id="ads-fee" value="15" step="5" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tiếp thị liên kết (%)</label>
+                            <input type="number" id="affiliate-fee" value="15" step="5" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Results -->
+            <div class="bg-white rounded-lg shadow-lg p-6 border-2 border-gray-200">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">
+                    <i class="fas fa-chart-line mr-2"></i>Kết Quả Tính Toán
+                </h2>
+
+                <!-- Results Display -->
+                <div class="space-y-4">
+                    <div class="bg-gray-50 p-4 rounded-lg border-2 border-gray-200">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-700">Tổng phí nền tảng:</span>
+                            <span id="platform-fee" class="text-lg font-semibold text-red-600">0 đ</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg border-2 border-gray-200">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-700">Tổng phí vận hành:</span>
+                            <span id="operation-fee" class="text-lg font-semibold text-red-600">0 đ</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-700">Doanh thu thực nhận:</span>
+                            <span id="net-revenue" class="text-xl font-bold text-blue-600">0 đ</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg border-2 border-green-200">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-700">Lợi nhuận:</span>
+                            <span id="profit" class="text-xl font-bold text-green-600">0 đ</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg border-2 border-red-200 shadow-sm">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-700">Tỷ lệ phí nền tảng:</span>
+                            <span id="platform-fee-ratio" class="text-lg font-semibold text-yellow-600">0%</span>
+                        </div>
+                        <div class="flex justify-between items-center mt-1">
+                            <span class="text-sm font-medium text-gray-700">Tỷ lệ phí vận hành:</span>
+                            <span id="operation-fee-ratio" class="text-lg font-semibold text-yellow-600">0%</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Fee Breakdown -->
+                <div class="mt-8 border-t pt-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-list-ul mr-2"></i>Chi tiết phí
+                    </h3>
+                    <div id="fee-breakdown" class="space-y-2 text-sm text-gray-600">
+                        <!-- Fee breakdown will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-12 text-gray-500">
+© 2025 Ứng dụng Tính Toán Doanh Thu.<br>
+  Phiên bản 1.0<br>
+  Made by <a href="https://hieu.is-a.dev" target="_blank" style="color: #2563eb; text-decoration: underline;">MinhHieu</a>
+        </div>
+    </div>
+
+    <script>
+        let currentPlatform = 'shopee';
+        
+        // Platform selection
+        document.getElementById('shopee-btn').addEventListener('click', () => {
+            selectPlatform('shopee');
+        });
+        
+        document.getElementById('tiktok-btn').addEventListener('click', () => {
+            selectPlatform('tiktok');
+        });
+        
+function selectPlatform(platform) {
+    currentPlatform = platform;
+
+    const shopeeBtn = document.getElementById('shopee-btn');
+    const tiktokBtn = document.getElementById('tiktok-btn');
+    const tiktokDayType = document.getElementById('tiktok-day-type');
+
+    // Reset style cho cả hai
+    shopeeBtn.classList.remove('selected');
+    tiktokBtn.classList.remove('selected');
+    shopeeBtn.classList.remove('bg-orange-500', 'text-white');
+    tiktokBtn.classList.remove('bg-black', 'text-white');
+
+    if (platform === 'shopee') {
+        shopeeBtn.classList.add('selected', 'bg-orange-500', 'text-white');
+        tiktokDayType.classList.add('hidden');
+        document.getElementById('affiliate-fee').value = 15;
+    } else {
+        tiktokBtn.classList.add('selected', 'bg-black', 'text-white');
+        tiktokDayType.classList.remove('hidden');
+        document.getElementById('affiliate-fee').value = 15;
+    }
+
+    const radioButtons = document.querySelectorAll('input[name="day-type"]');
+const labels = document.querySelectorAll('.day-btn');
+
+radioButtons.forEach((radio) => {
+  radio.addEventListener('change', () => {
+    labels.forEach((label) => label.classList.remove('active'));
+    document.querySelector(`label[for="${radio.id}"]`).classList.add('active');
+  });
+});
+
+
+    calculateResult();
+}
+        
+        // Input event listeners
+        const inputs = ['sell-price', 'cost-price', 'voucher', 'salary-fee', 'ads-fee', 'affiliate-fee'];
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', calculateResult);
+        });
+        
+        // Radio button event listener for TikTok day type
+        document.querySelectorAll('input[name="day-type"]').forEach(radio => {
+            radio.addEventListener('change', calculateResult);
+        });
+        
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN').format(amount);
+        }
+        
+function getRatioColorClass(ratio) {
+    if (ratio > 50) return 'text-red-600';
+    if (ratio < 10) return 'text-green-600';
+    return 'text-yellow-600';
+}
+
+        function calculateResult() {
+            const sellPrice = (parseFloat(document.getElementById('sell-price').value) || 0) * 1000;
+            const costPrice = (parseFloat(document.getElementById('cost-price').value) || 0) * 1000;
+            const voucher = (parseFloat(document.getElementById('voucher').value) || 0) * 1000;
+            const salaryFee = parseFloat(document.getElementById('salary-fee').value) || 0;
+            const adsFee = parseFloat(document.getElementById('ads-fee').value) || 0;
+            const affiliateFee = parseFloat(document.getElementById('affiliate-fee').value) || 0;
+            
+            if (sellPrice <= 0) {
+                resetResults();
+                return;
+            }
+            
+            let platformFeeDetails = [];
+            let operationFeeDetails = [];
+            let totalPlatformFee = 0;
+            let totalOperationFee = 0;
+            
+            if (currentPlatform === 'shopee') {
+                // Shopee platform fees
+                const paymentFee = (sellPrice-voucher) * 0.0491;
+                const fixedFee = (sellPrice-voucher) * 0.0884;
+                const voucherXtra = (sellPrice-voucher) * 0.03;
+                const contentXtra = (sellPrice-voucher) * 0.0295;
+                const infrastructureFee = 3000;
+                const pishipFee = 1650;
+                
+                totalPlatformFee = paymentFee + fixedFee + ((sellPrice-voucher) * 0.03) + infrastructureFee + pishipFee;
+                
+                platformFeeDetails = [
+                    `Phí thanh toán (4.91%): ${formatCurrency(paymentFee)} đ`,
+                    `Phí cố định (8.84%): ${formatCurrency(fixedFee)} đ`,
+                    `Voucher Xtra (3%): ${formatCurrency(voucherXtra)} đ`,
+                    `Content Xtra (2.95%): ${formatCurrency(contentXtra)} đ`,
+                    `Phí hạ tầng: ${formatCurrency(infrastructureFee)} đ`,
+                    `PiShip: ${formatCurrency(pishipFee)} đ`
+                ];
+                
+                // Shopee operation fees
+                const adsFeeAmount = (sellPrice-voucher) * (adsFee / 100);
+                const affiliateFeeAmount = (sellPrice-voucher) * (affiliateFee / 100);
+                const taxFee = (sellPrice-voucher) * 0.015;
+                const packagingFee = (sellPrice-voucher) * 0.025;
+                const otherFee = (sellPrice-voucher) * 0.02;
+                const salaryFeeAmount = (sellPrice-voucher) * (salaryFee / 100);
+                
+                totalOperationFee = adsFeeAmount + affiliateFeeAmount + taxFee + packagingFee + otherFee + salaryFeeAmount;
+                
+                operationFeeDetails = [
+                    `Quảng cáo (${adsFee}%): ${formatCurrency(adsFeeAmount)} đ`,
+                    `Tiếp thị liên kết (${affiliateFee}%): ${formatCurrency(affiliateFeeAmount)} đ`,
+                    `Thuế TNCN (1.5%): ${formatCurrency(taxFee)} đ`,
+                    `Đóng gói (2.5%): ${formatCurrency(packagingFee)} đ`,
+                    `Chi phí khác (2%): ${formatCurrency(otherFee)} đ`,
+                    `Lương nhân viên (${salaryFee}%): ${formatCurrency(salaryFeeAmount)} đ`
+                ];
+                
+            } else {
+                // TikTok platform fees
+                const transactionFee = (sellPrice-voucher) * 0.05;
+                const commissionFee = (sellPrice-voucher) * 0.10;
+                
+                const dayType = document.querySelector('input[name="day-type"]:checked').value;
+                const voucherExtraRate = dayType === 'normal' ? 0.02 : 0.03;
+                const voucherExtra = (sellPrice-voucher) * voucherExtraRate;
+                
+                totalPlatformFee = transactionFee + commissionFee + voucherExtra;
+                
+                platformFeeDetails = [
+                    `Phí giao dịch (5%): ${formatCurrency(transactionFee)} đ`,
+                    `Phí hoa hồng nền tảng (10%): ${formatCurrency(commissionFee)} đ`,
+                    `Voucher Extra Program (${voucherExtraRate * 100}%): ${formatCurrency(voucherExtra)} đ`
+                ];
+                
+                // TikTok operation fees (same as Shopee)
+                const adsFeeAmount = (sellPrice-voucher) * (adsFee / 100);
+                const affiliateFeeAmount = (sellPrice-voucher) * (affiliateFee / 100);
+                const taxFee = (sellPrice-voucher) * 0.015;
+                const packagingFee = (sellPrice-voucher) * 0.025;
+                const otherFee = (sellPrice-voucher) * 0.02;
+                const salaryFeeAmount = (sellPrice-voucher) * (salaryFee / 100);
+                
+                totalOperationFee = adsFeeAmount + affiliateFeeAmount + taxFee + packagingFee + otherFee + salaryFeeAmount;
+                
+                operationFeeDetails = [
+                    `Quảng cáo (${adsFee}%): ${formatCurrency(adsFeeAmount)} đ`,
+                    `Tiếp thị liên kết (${affiliateFee}%): ${formatCurrency(affiliateFeeAmount)} đ`,
+                    `Thuế TNCN (1.5%): ${formatCurrency(taxFee)} đ`,
+                    `Đóng gói (2.5%): ${formatCurrency(packagingFee)} đ`,
+                    `Chi phí khác (2%): ${formatCurrency(otherFee)} đ`,
+                    `Lương nhân viên (${salaryFee}%): ${formatCurrency(salaryFeeAmount)} đ`
+                ];
+            }
+            
+            const netRevenue = sellPrice - voucher - totalPlatformFee;
+            const profit = netRevenue - costPrice - totalOperationFee;
+            const totalFee = totalPlatformFee + totalOperationFee;
+            const platformFeeRatio = (totalPlatformFee / sellPrice) * 100;
+            const operationFeeRatio = (totalOperationFee / sellPrice) * 100;
+            
+            // Update display
+            document.getElementById('platform-fee').textContent = formatCurrency(totalPlatformFee) + ' đ';
+            document.getElementById('operation-fee').textContent = formatCurrency(totalOperationFee) + ' đ';
+
+            const netRevenueElement = document.getElementById('net-revenue');
+            netRevenueElement.textContent = formatCurrency(netRevenue) + ' đ';
+            netRevenueElement.className = netRevenue >= 0 ? 'text-xl font-bold text-blue-600' : 'text-xl font-bold text-red-600';
+            
+            const profitElement = document.getElementById('profit');
+            profitElement.textContent = formatCurrency(profit) + ' đ';
+            profitElement.className = profit >= 0 ? 'text-xl font-bold text-green-600' : 'text-xl font-bold text-red-600';
+            
+const platformFeeRatioEl = document.getElementById('platform-fee-ratio');
+const operationFeeRatioEl = document.getElementById('operation-fee-ratio');
+
+const platformFeeRatioText = isNaN(platformFeeRatio) ? 0 : platformFeeRatio;
+const operationFeeRatioText = isNaN(operationFeeRatio) ? 0 : operationFeeRatio;
+
+platformFeeRatioEl.textContent = platformFeeRatioText.toFixed(2) + '%';
+operationFeeRatioEl.textContent = operationFeeRatioText.toFixed(2) + '%';
+
+platformFeeRatioEl.className = 'text-lg font-semibold ' + getRatioColorClass(platformFeeRatioText);
+operationFeeRatioEl.className = 'text-lg font-semibold ' + getRatioColorClass(operationFeeRatioText);
+            
+            // Update fee breakdown
+const breakdown = document.getElementById('fee-breakdown');
+breakdown.innerHTML = `
+    <div class="mb-3">
+        <strong class="text-gray-800">Phí nền tảng ${currentPlatform.toUpperCase()}:</strong>
+        ${platformFeeDetails.map(detail => `<div class="ml-4">• ${detail}</div>`).join('')}
+        ${currentPlatform === 'shopee' ? `<div class="ml-4 text-sm text-red-600 italic mt-1">* Chỉ tính một trong hai phí: Voucher Xtra hoặc Content Xtra</div>` : ''}
+    </div>
+    <div>
+        <strong class="text-gray-800">Phí vận hành:</strong>
+        ${operationFeeDetails.map(detail => `<div class="ml-4">• ${detail}</div>`).join('')}
+    </div>
+`;
+
+        }
+        
+        function resetResults() {
+            document.getElementById('platform-fee').textContent = '0 đ';
+            document.getElementById('operation-fee').textContent = '0 đ';
+            document.getElementById('net-revenue').textContent = '0 đ';
+            document.getElementById('profit').textContent = '0 đ';
+            document.getElementById('fee-ratio').textContent = '0%';
+            document.getElementById('fee-breakdown').innerHTML = '';
+        }
+        
+
+// Initialize
+selectPlatform('shopee'); // hoặc 'tiktok' nếu bạn muốn khởi tạo TikTok trước
+
+    </script>
+</body>
+</html>
