@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -30,6 +30,27 @@
         border-color: #d97706;
         z-index: 1;
     }
+
+  .toggle-btn {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    border: 2px solid #e5e7eb;
+    background-color: #f3f4f6;
+    color: #374151;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+    user-select: none;
+  }
+
+  /* Khi checkbox được tick → tô đen */
+  input[type="checkbox"]:checked + label.toggle-btn {
+    background-color: black;
+    color: white;
+    border-color: black;
+  }
+
 .day-btn {
   padding: 0.6rem 1.25rem;
   border-radius: 0.5rem;
@@ -49,6 +70,21 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
+  .select-btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    background: #f3f4f6;
+    border: 2px solid #e5e7eb;
+    color: #374151;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .select-btn.active {
+    background: black;
+    color: white;
+    border-color: black;
+  }
 </style>
 
 </head>
@@ -115,9 +151,36 @@
                         <input type="number" id="voucher" min="0" class="w-full pr-16 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0">
                         <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none select-none">.000đ</span>
                     </div>
+
+<div class="relative">
+    <label class="block text-sm font-medium text-gray-700 mb-2">Số đơn dự kiến</label>
+    <input type="number" id="order-count" min="1" value="1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="1">
+</div>
+
                 </div>
 
+<div id="shopee-xtra-options" class="mb-6 hidden">
+  <label class="block text-sm font-medium text-gray-700 mb-3">Chọn các chương trình đã đăng ký:</label>
+  <div class="flex space-x-4">
+    <input type="checkbox" id="voucher-xtra" class="hidden">
+    <label for="voucher-xtra" class="toggle-btn">Voucher Xtra</label>
+
+    <input type="checkbox" id="content-xtra" class="hidden">
+    <label for="content-xtra" class="toggle-btn">Content Xtra</label>
+  </div>
+  <p class="text-sm text-red-600 mt-2">* Chỉ tính một trong hai phí: Voucher Xtra hoặc Content Xtra</p>
+</div>
+
+
                 <!-- TikTok Day Type Selection -->
+<div id="tiktok-xtra-options" class="mb-6 hidden">
+  <label class="block text-sm font-medium text-gray-700 mb-3">Chọn các chương trình đã đăng ký:</label>
+  <div class="flex space-x-4">
+    <input type="checkbox" id="tiktok-voucher-xtra" class="hidden">
+    <label for="tiktok-voucher-xtra" class="toggle-btn">Voucher Extra</label>
+  </div>
+</div>
+
 <div id="tiktok-day-type" class="mb-6 hidden">
   <label class="block text-sm font-medium text-gray-700 mb-3">Phí Voucher Extra</label>
   <div class="flex space-x-4">
@@ -131,6 +194,7 @@
 
   </div>
 </div>
+
                 <!-- Customizable Fees -->
                 <div class="border-t pt-6">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">
@@ -160,6 +224,7 @@
                 </h2>
 
                 <!-- Results Display -->
+                 
                 <div class="space-y-4">
                     <div class="bg-gray-50 p-4 rounded-lg border-2 border-gray-200">
                         <div class="flex justify-between items-center">
@@ -253,7 +318,22 @@ function selectPlatform(platform) {
         document.getElementById('affiliate-fee').value = 15;
     } else {
         tiktokBtn.classList.add('selected', 'bg-black', 'text-white');
-        tiktokDayType.classList.remove('hidden');
+// Khi chọn TikTok
+if (platform === 'shopee') {
+  document.getElementById('shopee-xtra-options').classList.remove('hidden');
+  document.getElementById('tiktok-xtra-options').classList.add('hidden');
+  tiktokDayType.classList.add('hidden'); // ẩn luôn phần ngày
+} else {
+  document.getElementById('shopee-xtra-options').classList.add('hidden');
+  document.getElementById('tiktok-xtra-options').classList.remove('hidden');
+
+  // 👇 CHỈ hiện phần chọn ngày nếu voucher xtra được tích
+  if (document.getElementById('tiktok-voucher-xtra')?.checked) {
+    tiktokDayType.classList.remove('hidden');
+  } else {
+    tiktokDayType.classList.add('hidden');
+  }
+}
         document.getElementById('affiliate-fee').value = 15;
     }
 
@@ -267,12 +347,22 @@ radioButtons.forEach((radio) => {
   });
 });
 
+if (platform === 'shopee') {
+  document.getElementById('shopee-xtra-options').classList.remove('hidden');
+  document.getElementById('tiktok-xtra-options').classList.add('hidden');
+} else {
+  document.getElementById('shopee-xtra-options').classList.add('hidden');
+  document.getElementById('tiktok-xtra-options').classList.remove('hidden');
+}
+
+const isVoucherXtraChecked = document.getElementById('voucher-xtra').checked;
+const isContentXtraChecked = document.getElementById('content-xtra').checked;
 
     calculateResult();
 }
         
         // Input event listeners
-        const inputs = ['sell-price', 'cost-price', 'voucher', 'salary-fee', 'ads-fee', 'affiliate-fee'];
+const inputs = ['sell-price', 'cost-price', 'voucher', 'salary-fee', 'ads-fee', 'affiliate-fee', 'order-count'];
         inputs.forEach(id => {
             document.getElementById(id).addEventListener('input', calculateResult);
         });
@@ -296,10 +386,27 @@ function getRatioColorClass(ratio) {
             const sellPrice = (parseFloat(document.getElementById('sell-price').value) || 0) * 1000;
             const costPrice = (parseFloat(document.getElementById('cost-price').value) || 0) * 1000;
             const voucher = (parseFloat(document.getElementById('voucher').value) || 0) * 1000;
+            const orderCount = parseInt(document.getElementById('order-count').value) || 1;
             const salaryFee = parseFloat(document.getElementById('salary-fee').value) || 0;
             const adsFee = parseFloat(document.getElementById('ads-fee').value) || 0;
             const affiliateFee = parseFloat(document.getElementById('affiliate-fee').value) || 0;
             
+const isVoucherXtraChecked = document.getElementById('voucher-xtra')?.checked;
+const isContentXtraChecked = document.getElementById('content-xtra')?.checked;
+const isTiktokVoucherXtraChecked = document.getElementById('tiktok-voucher-xtra')?.checked;
+const giáSauVoucher = (sellPrice - voucher) * orderCount;  // 👈 chuyển lên đây
+
+
+if (currentPlatform === 'shopee') {
+  if (isVoucherXtraChecked) {
+    // tính phí voucherXtra, KHÔNG cộng thêm contentXtra
+  } else if (isContentXtraChecked) {
+    // tính phí contentXtra, KHÔNG cộng thêm voucherXtra
+  } else {
+    // không tính thêm phí nào
+  }
+}
+
             if (sellPrice <= 0) {
                 resetResults();
                 return;
@@ -312,31 +419,47 @@ function getRatioColorClass(ratio) {
             
             if (currentPlatform === 'shopee') {
                 // Shopee platform fees
-                const paymentFee = (sellPrice-voucher) * 0.0491;
-                const fixedFee = (sellPrice-voucher) * 0.0884;
-                const voucherXtra = (sellPrice-voucher) * 0.03;
-                const contentXtra = (sellPrice-voucher) * 0.0295;
-                const infrastructureFee = 3000;
-                const pishipFee = 1650;
-                
-                totalPlatformFee = paymentFee + fixedFee + ((sellPrice-voucher) * 0.03) + infrastructureFee + pishipFee;
-                
-                platformFeeDetails = [
-                    `Phí thanh toán (4.91%): ${formatCurrency(paymentFee)} đ`,
-                    `Phí cố định (8.84%): ${formatCurrency(fixedFee)} đ`,
-                    `Voucher Xtra (3%): ${formatCurrency(voucherXtra)} đ`,
-                    `Content Xtra (2.95%): ${formatCurrency(contentXtra)} đ`,
-                    `Phí hạ tầng: ${formatCurrency(infrastructureFee)} đ`,
-                    `PiShip: ${formatCurrency(pishipFee)} đ`
-                ];
+                const paymentFee = (giáSauVoucher) * 0.0491;
+                const fixedFee = (giáSauVoucher) * 0.0884;
+const voucherXtra = (giáSauVoucher) * 0.03;
+const contentXtra = (giáSauVoucher) * 0.0295;
+const infrastructureFee = 3000;
+const pishipFee = 1650;
+
+
+
+totalPlatformFee = paymentFee + fixedFee + infrastructureFee + pishipFee;
+
+platformFeeDetails = [
+    `Phí thanh toán (4.91%): ${formatCurrency(paymentFee)} đ`,
+    `Phí cố định (8.84%): ${formatCurrency(fixedFee)} đ`
+];
+
+if (isVoucherXtraChecked && isContentXtraChecked) {
+    totalPlatformFee += voucherXtra;
+    platformFeeDetails.push(`Voucher Xtra (3%): ${formatCurrency(voucherXtra)} đ`);
+} else if (isVoucherXtraChecked) {
+    totalPlatformFee += voucherXtra;
+    platformFeeDetails.push(`Voucher Xtra (3%): ${formatCurrency(voucherXtra)} đ`);
+} else if (isContentXtraChecked) {
+    totalPlatformFee += contentXtra;
+    platformFeeDetails.push(`Content Xtra (2.95%): ${formatCurrency(contentXtra)} đ`);
+}
+
+
+platformFeeDetails.push(
+    `Phí hạ tầng: ${formatCurrency(infrastructureFee)} đ`,
+    `PiShip: ${formatCurrency(pishipFee)} đ`
+);
+
                 
                 // Shopee operation fees
-                const adsFeeAmount = (sellPrice-voucher) * (adsFee / 100);
-                const affiliateFeeAmount = (sellPrice-voucher) * (affiliateFee / 100);
-                const taxFee = (sellPrice-voucher) * 0.015;
-                const packagingFee = (sellPrice-voucher) * 0.025;
-                const otherFee = (sellPrice-voucher) * 0.02;
-                const salaryFeeAmount = (sellPrice-voucher) * (salaryFee / 100);
+                const adsFeeAmount = (giáSauVoucher) * (adsFee / 100);
+                const affiliateFeeAmount = (giáSauVoucher) * (affiliateFee / 100);
+                const taxFee = (giáSauVoucher) * 0.015;
+                const packagingFee = (giáSauVoucher) * 0.025;
+                const otherFee = (giáSauVoucher) * 0.02;
+                const salaryFeeAmount = (giáSauVoucher) * (salaryFee / 100);
                 
                 totalOperationFee = adsFeeAmount + affiliateFeeAmount + taxFee + packagingFee + otherFee + salaryFeeAmount;
                 
@@ -351,28 +474,36 @@ function getRatioColorClass(ratio) {
                 
             } else {
                 // TikTok platform fees
-                const transactionFee = (sellPrice-voucher) * 0.05;
-                const commissionFee = (sellPrice-voucher) * 0.10;
+                const transactionFee = (giáSauVoucher) * 0.05;
+                const commissionFee = (giáSauVoucher) * 0.10;
                 
                 const dayType = document.querySelector('input[name="day-type"]:checked').value;
                 const voucherExtraRate = dayType === 'normal' ? 0.02 : 0.03;
-                const voucherExtra = (sellPrice-voucher) * voucherExtraRate;
+let voucherExtra = 0;
+const isTiktokVoucherXtraChecked = document.getElementById('tiktok-voucher-xtra')?.checked;
+if (isTiktokVoucherXtraChecked) {
+    voucherExtra = (sellPrice - voucher) * voucherExtraRate;
+}
+totalPlatformFee = transactionFee + commissionFee + voucherExtra;
+
                 
-                totalPlatformFee = transactionFee + commissionFee + voucherExtra;
-                
-                platformFeeDetails = [
-                    `Phí giao dịch (5%): ${formatCurrency(transactionFee)} đ`,
-                    `Phí hoa hồng nền tảng (10%): ${formatCurrency(commissionFee)} đ`,
-                    `Voucher Extra Program (${voucherExtraRate * 100}%): ${formatCurrency(voucherExtra)} đ`
-                ];
+platformFeeDetails = [
+    `Phí giao dịch (5%): ${formatCurrency(transactionFee)} đ`,
+    `Phí hoa hồng nền tảng (10%): ${formatCurrency(commissionFee)} đ`
+];
+
+if (isTiktokVoucherXtraChecked) {
+    platformFeeDetails.push(`Voucher Extra Program (${voucherExtraRate * 100}%): ${formatCurrency(voucherExtra)} đ`);
+}
+
                 
                 // TikTok operation fees (same as Shopee)
-                const adsFeeAmount = (sellPrice-voucher) * (adsFee / 100);
-                const affiliateFeeAmount = (sellPrice-voucher) * (affiliateFee / 100);
-                const taxFee = (sellPrice-voucher) * 0.015;
-                const packagingFee = (sellPrice-voucher) * 0.025;
-                const otherFee = (sellPrice-voucher) * 0.02;
-                const salaryFeeAmount = (sellPrice-voucher) * (salaryFee / 100);
+                const adsFeeAmount = (giáSauVoucher) * (adsFee / 100);
+                const affiliateFeeAmount = (giáSauVoucher) * (affiliateFee / 100);
+                const taxFee = (giáSauVoucher) * 0.015;
+                const packagingFee = (giáSauVoucher) * 0.025;
+                const otherFee = (giáSauVoucher) * 0.02;
+                const salaryFeeAmount = (giáSauVoucher) * (salaryFee / 100);
                 
                 totalOperationFee = adsFeeAmount + affiliateFeeAmount + taxFee + packagingFee + otherFee + salaryFeeAmount;
                 
@@ -386,8 +517,42 @@ function getRatioColorClass(ratio) {
                 ];
             }
             
-            const netRevenue = sellPrice - voucher - totalPlatformFee;
-            const profit = netRevenue - costPrice - totalOperationFee;
+let netRevenue = 0;
+
+if (currentPlatform === 'shopee') {
+    const paymentFee = giáSauVoucher * 0.0491;
+    const fixedFee = giáSauVoucher * 0.0884;
+    const voucherXtraFee = giáSauVoucher * 0.03;
+    const contentXtraFee = giáSauVoucher * 0.0295;
+    const infraFee = 3000;
+    const pishipFee = 1650;
+
+    const hasVoucherXtra = isVoucherXtraChecked;
+    const hasContentXtra = isContentXtraChecked;
+
+if (hasVoucherXtra && hasContentXtra) {
+    netRevenue = giáSauVoucher - paymentFee - fixedFee - voucherXtraFee - infraFee - pishipFee;
+} else if (hasVoucherXtra) {
+    netRevenue = giáSauVoucher - paymentFee - fixedFee - voucherXtraFee - infraFee - pishipFee;
+} else if (hasContentXtra) {
+    netRevenue = giáSauVoucher - paymentFee - fixedFee - contentXtraFee - infraFee - pishipFee;
+} else {
+    netRevenue = giáSauVoucher - paymentFee - fixedFee - infraFee - pishipFee;
+}
+
+
+} else if (currentPlatform === 'tiktok') {
+    const transactionFee = giáSauVoucher * 0.05;
+    const commissionFee = giáSauVoucher * 0.10;
+    const dayType = document.querySelector('input[name="day-type"]:checked').value;
+    const voucherRate = dayType === 'normal' ? 0.02 : 0.03;
+    const hasVoucherXtraTikTok = document.getElementById('tiktok-voucher-xtra')?.checked;
+    const voucherXtraFee = hasVoucherXtraTikTok ? giáSauVoucher * voucherRate : 0;
+
+    netRevenue = giáSauVoucher - transactionFee - commissionFee - voucherXtraFee;
+}
+
+const profit = netRevenue - (costPrice * orderCount) - totalOperationFee;
             const totalFee = totalPlatformFee + totalOperationFee;
             const platformFeeRatio = (totalPlatformFee / sellPrice) * 100;
             const operationFeeRatio = (totalOperationFee / sellPrice) * 100;
@@ -430,6 +595,24 @@ breakdown.innerHTML = `
     </div>
 `;
 
+// Khi người dùng tick hoặc bỏ tick các checkbox → tính lại kết quả
+document.getElementById('voucher-xtra')?.addEventListener('change', calculateResult);
+document.getElementById('content-xtra')?.addEventListener('change', calculateResult);
+const tiktokVoucherCheckbox = document.getElementById('tiktok-voucher-xtra');
+const tiktokDayType = document.getElementById('tiktok-day-type');
+
+tiktokVoucherCheckbox?.addEventListener('change', () => {
+    if (tiktokVoucherCheckbox.checked) {
+if (document.getElementById('tiktok-voucher-xtra')?.checked) {
+    tiktokDayType.classList.remove('hidden');
+} else {
+    tiktokDayType.classList.add('hidden');
+}
+    } else {
+        tiktokDayType.classList.add('hidden');
+    }
+    calculateResult(); // cập nhật lại kết quả
+});
         }
         
         function resetResults() {
@@ -441,11 +624,41 @@ breakdown.innerHTML = `
             document.getElementById('fee-breakdown').innerHTML = '';
         }
         
+// Kích hoạt visual chọn cho các nút radio
+function setupToggleButtons(name) {
+  const inputs = document.querySelectorAll(`input[name="${name}"]`);
+  const labels = document.querySelectorAll(`label[for^="${name}"]`);
+  inputs.forEach(radio => {
+    radio.addEventListener('change', () => {
+      labels.forEach(label => label.classList.remove('active'));
+      const targetLabel = document.querySelector(`label[for="${radio.id}"]`);
+      targetLabel.classList.add('active');
+    });
+  });
+}
+
+// Gọi hàm này sau khi DOM đã render
+setupToggleButtons('shopee-xtra');
+setupToggleButtons('tiktok-xtra');
+
 
 // Initialize
 selectPlatform('shopee'); // hoặc 'tiktok' nếu bạn muốn khởi tạo TikTok trước
 
+// Sự kiện ẩn/hiện phần chọn ngày TikTok dựa vào checkbox
+const tiktokVoucherCheckbox = document.getElementById('tiktok-voucher-xtra');
+const tiktokDayType = document.getElementById('tiktok-day-type');
+
+tiktokVoucherCheckbox?.addEventListener('change', () => {
+    if (tiktokVoucherCheckbox.checked) {
+        tiktokDayType.classList.remove('hidden');
+    } else {
+        tiktokDayType.classList.add('hidden');
+    }
+    calculateResult(); // cập nhật kết quả ngay khi đổi
+});
+
+
     </script>
 </body>
 </html>
-
