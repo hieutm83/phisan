@@ -168,7 +168,6 @@
     <input type="checkbox" id="content-xtra" class="hidden">
     <label for="content-xtra" class="toggle-btn">Content Xtra</label>
   </div>
-  <p class="text-sm text-red-600 mt-2">* Chỉ tính một trong hai phí: Voucher Xtra hoặc Content Xtra</p>
 </div>
 
 
@@ -436,8 +435,14 @@ platformFeeDetails = [
 ];
 
 if (isVoucherXtraChecked && isContentXtraChecked) {
+    // Tính phí: chỉ cộng phí Voucher Xtra (như hiện tại)
     totalPlatformFee += voucherXtra;
-    platformFeeDetails.push(`Voucher Xtra (3%): ${formatCurrency(voucherXtra)} đ`);
+
+    // Hiển thị cả 2 phí
+    platformFeeDetails.push(
+        `Voucher Xtra (3%): ${formatCurrency(voucherXtra)} đ`,
+        `Content Xtra (2.95%): ${formatCurrency(contentXtra)} đ`
+    );
 } else if (isVoucherXtraChecked) {
     totalPlatformFee += voucherXtra;
     platformFeeDetails.push(`Voucher Xtra (3%): ${formatCurrency(voucherXtra)} đ`);
@@ -445,6 +450,7 @@ if (isVoucherXtraChecked && isContentXtraChecked) {
     totalPlatformFee += contentXtra;
     platformFeeDetails.push(`Content Xtra (2.95%): ${formatCurrency(contentXtra)} đ`);
 }
+
 
 
 platformFeeDetails.push(
@@ -552,10 +558,10 @@ if (hasVoucherXtra && hasContentXtra) {
     netRevenue = giáSauVoucher - transactionFee - commissionFee - voucherXtraFee;
 }
 
-const profit = netRevenue - (costPrice * orderCount) - totalOperationFee;
+const profit = netRevenue - (costPrice * orderCount);
             const totalFee = totalPlatformFee + totalOperationFee;
-            const platformFeeRatio = (totalPlatformFee / sellPrice) * 100;
-            const operationFeeRatio = (totalOperationFee / sellPrice) * 100;
+const platformFeeRatio = (netRevenue > 0) ? (totalPlatformFee / netRevenue) * 100 : 0;
+const operationFeeRatio = (netRevenue > 0) ? (totalOperationFee / netRevenue) * 100 : 0;
             
             // Update display
             document.getElementById('platform-fee').textContent = formatCurrency(totalPlatformFee) + ' đ';
@@ -587,7 +593,9 @@ breakdown.innerHTML = `
     <div class="mb-3">
         <strong class="text-gray-800">Phí nền tảng ${currentPlatform.toUpperCase()}:</strong>
         ${platformFeeDetails.map(detail => `<div class="ml-4">• ${detail}</div>`).join('')}
-        ${currentPlatform === 'shopee' ? `<div class="ml-4 text-sm text-red-600 italic mt-1">* Chỉ tính một trong hai phí: Voucher Xtra hoặc Content Xtra</div>` : ''}
+${(currentPlatform === 'shopee' && isVoucherXtraChecked && isContentXtraChecked) 
+  ? `<div class="ml-4 text-sm text-red-600 italic mt-1">* Chỉ tính một trong hai phí: Voucher Xtra hoặc Content Xtra</div>` 
+  : ''}
     </div>
     <div>
         <strong class="text-gray-800">Phí vận hành:</strong>
