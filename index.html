@@ -558,7 +558,7 @@ if (hasVoucherXtra && hasContentXtra) {
     netRevenue = giáSauVoucher - transactionFee - commissionFee - voucherXtraFee;
 }
 
-const profit = netRevenue - (costPrice * orderCount);
+const profit = netRevenue - (costPrice * orderCount) - totalOperationFee;
             const totalFee = totalPlatformFee + totalOperationFee;
 const platformFeeRatio = (netRevenue > 0) ? (totalPlatformFee / netRevenue) * 100 : 0;
 const operationFeeRatio = (netRevenue > 0) ? (totalOperationFee / netRevenue) * 100 : 0;
