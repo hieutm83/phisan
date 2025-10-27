@@ -423,7 +423,7 @@ if (currentPlatform === 'shopee') {
 const voucherXtra = (giáSauVoucher) * 0.03;
 const contentXtra = (giáSauVoucher) * 0.0295;
 const infrastructureFee = 3000;
-const pishipFee = 1650;
+const pishipFee = 1620;
 
 
 
@@ -473,8 +473,8 @@ platformFeeDetails.push(
                     `Quảng cáo (${adsFee}%): ${formatCurrency(adsFeeAmount)} đ`,
                     `Tiếp thị liên kết (${affiliateFee}%): ${formatCurrency(affiliateFeeAmount)} đ`,
                     `Thuế TNCN (1.5%): ${formatCurrency(taxFee)} đ`,
-                    `Đóng gói (2.5%): ${formatCurrency(packagingFee)} đ`,
-                    `Chi phí khác (2%): ${formatCurrency(otherFee)} đ`,
+                    `Đóng gói (1%): ${formatCurrency(packagingFee)} đ`,
+                    `Chi phí khác (1%): ${formatCurrency(otherFee)} đ`,
                     `Lương nhân viên (${salaryFee}%): ${formatCurrency(salaryFeeAmount)} đ`
                 ];
                 
@@ -490,18 +490,27 @@ const isTiktokVoucherXtraChecked = document.getElementById('tiktok-voucher-xtra'
 if (isTiktokVoucherXtraChecked) {
     voucherExtra = (sellPrice - voucher) * voucherExtraRate;
 }
-totalPlatformFee = transactionFee + commissionFee + voucherExtra;
-
+// ✅ Thêm phí cố định
+const sfrFee = 1620;        // Hoàn phí vận chuyển
+const handlingFee = 3000;   // Phí xử lý đơn hàng
                 
+// ✅ Tổng phí nền tảng TikTok
+totalPlatformFee = transactionFee + commissionFee + voucherExtra + sfrFee + handlingFee;
+                
+// ✅ Hiển thị chung trong nhóm “Phí nền tảng TIKTOK”
 platformFeeDetails = [
     `Phí giao dịch (5%): ${formatCurrency(transactionFee)} đ`,
-    `Phí hoa hồng nền tảng (10%): ${formatCurrency(commissionFee)} đ`
+    `Phí hoa hồng nền tảng (10%): ${formatCurrency(commissionFee)} đ`,
 ];
 
 if (isTiktokVoucherXtraChecked) {
     platformFeeDetails.push(`Voucher Extra Program (${voucherExtraRate * 100}%): ${formatCurrency(voucherExtra)} đ`);
 }
-
+                // Thêm phí cố định chung
+                platformFeeDetails.push(
+                    `Hoàn phí vận chuyển (SFR): ${formatCurrency(sfrFee)} đ`,
+                    `Phí xử lý đơn hàng: ${formatCurrency(handlingFee)} đ`
+                );
                 
                 // TikTok operation fees (same as Shopee)
                 const adsFeeAmount = (giáSauVoucher) * (adsFee / 100);
@@ -517,8 +526,8 @@ if (isTiktokVoucherXtraChecked) {
                     `Quảng cáo (${adsFee}%): ${formatCurrency(adsFeeAmount)} đ`,
                     `Tiếp thị liên kết (${affiliateFee}%): ${formatCurrency(affiliateFeeAmount)} đ`,
                     `Thuế TNCN (1.5%): ${formatCurrency(taxFee)} đ`,
-                    `Đóng gói (2.5%): ${formatCurrency(packagingFee)} đ`,
-                    `Chi phí khác (2%): ${formatCurrency(otherFee)} đ`,
+                    `Đóng gói (1%): ${formatCurrency(packagingFee)} đ`,
+                    `Chi phí khác (1%): ${formatCurrency(otherFee)} đ`,
                     `Lương nhân viên (${salaryFee}%): ${formatCurrency(salaryFeeAmount)} đ`
                 ];
             }
@@ -555,11 +564,11 @@ if (hasVoucherXtra && hasContentXtra) {
     const hasVoucherXtraTikTok = document.getElementById('tiktok-voucher-xtra')?.checked;
     const voucherXtraFee = hasVoucherXtraTikTok ? giáSauVoucher * voucherRate : 0;
 
-    netRevenue = giáSauVoucher - transactionFee - commissionFee - voucherXtraFee;
+    netRevenue = giáSauVoucher - transactionFee - commissionFee - voucherExtra - sfrFee - handlingFee;
 }
 
 const profit = netRevenue - (costPrice * orderCount) - totalOperationFee;  // (sai vì đang trừ cả operationFee lẫn cost x order)
-            const totalFee = totalPlatformFee + totalOperationFee;
+const totalFee = totalPlatformFee + totalOperationFee;
 const platformFeeRatio = (netRevenue > 0) ? (totalPlatformFee / giáSauVoucher) * 100 : 0;
 const operationFeeRatio = (netRevenue > 0) ? (totalOperationFee / giáSauVoucher) * 100 : 0;
             
@@ -670,4 +679,5 @@ tiktokVoucherCheckbox?.addEventListener('change', () => {
     </script>
 </body>
 </html>
+
 
