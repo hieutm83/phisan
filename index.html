@@ -560,8 +560,8 @@ if (hasVoucherXtra && hasContentXtra) {
 
 const profit = netRevenue - (costPrice * orderCount) - totalOperationFee;  // (sai vì đang trừ cả operationFee lẫn cost x order)
             const totalFee = totalPlatformFee + totalOperationFee;
-const platformFeeRatio = (netRevenue > 0) ? (totalPlatformFee / netRevenue) * 100 : 0;
-const operationFeeRatio = (netRevenue > 0) ? (totalOperationFee / netRevenue) * 100 : 0;
+const platformFeeRatio = (netRevenue > 0) ? (totalPlatformFee / giáSauVoucher) * 100 : 0;
+const operationFeeRatio = (netRevenue > 0) ? (totalOperationFee / giáSauVoucher) * 100 : 0;
             
             // Update display
             document.getElementById('platform-fee').textContent = formatCurrency(totalPlatformFee) + ' đ';
@@ -670,3 +670,4 @@ tiktokVoucherCheckbox?.addEventListener('change', () => {
     </script>
 </body>
 </html>
+
